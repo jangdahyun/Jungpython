@@ -339,13 +339,19 @@
 					$("#region2").html(
 						`<option value="0">지역을 선택하세요.</option>`
 					)
+				} else if(val === "전체"){
+					$("#region2").empty()
+					$("#region2").html(
+						`<option value="0">지역을 선택하세요.</option>`
+					)
 				} else {
-					axios.get('/api/donglist?gu='+val)
+					axios.get('./data/data.json')
 					.then(function(res) {
-						console.log("응답");
 						$("#region2").empty()
 						content = `<option value="0">지역을 선택하세요.</option>`;
-						let data = res.data
+						let data = res.data[val].sort(function(a, b) {
+							return a.localeCompare(b);
+						})
 						for( a of data){
 							content += `<option value="${a}">${a}</option>`
 						}
