@@ -179,8 +179,8 @@
 				if(sheetName == '노인운전자사고') {				// 노인 운전자 사고인 경우
 
 					if(region1 == '전체'){							// region1이 선택되지 않은 경우
-						content1 = '/static/map_DriveGu.html';
-						content2 = '/static/bar_DriveGu.html';
+						content1 = './static/map_DriveGu.html';
+						content2 = './static/bar_DriveGu.html';
 						// iframe 로딩 전에 로딩 스피너 표시
 						$("#loading-spinner1").show();
 						// iframe 로드 완료 후
@@ -204,8 +204,8 @@
 					} else {										// region1이 선택된경우
 						
 						if(region2 == 0){							// region2가 선택되지 않은 경우
-							content1 = "/static/map_Drive_" + region1 + ".html";
-							content2 = "/static/bar_DriveDong_" + region1 + ".html";
+							content1 = "./static/map_Drive_" + region1 + ".html";
+							content2 = "./static/bar_DriveDong_" + region1 + ".html";
 							// iframe 로딩 전에 로딩 스피너 표시
 							$("#loading-spinner1").show();
 							// iframe 로드 완료 후
@@ -227,8 +227,8 @@
 							return ;
 
 						} else { // region2가 선택된 경우
-							content1 = "/static/map_Drive_" + region1 + ".html";
-							content2 = "/static/bar_DriveDongDetail_" + region1+"_"+ region2+ ".html";
+							content1 = "./static/map_Drive_" + region1 + ".html";
+							content2 = "./static/bar_DriveDongDetail_" + region1+"_"+ region2+ ".html";
 							// iframe 로딩 전에 로딩 스피너 표시
 							$("#loading-spinner1").show();
 							// iframe 로드 완료 후
@@ -255,8 +255,8 @@
 				} else {// 노인 보행자 인경우!
 
 					if(region1 == '전체'){							// region1이 선택되지 않은 경우
-						content1 = '/static/map_WorkingGu.html';
-						content2 = '/static/bar_WorkingGu.html';
+						content1 = './static/map_WorkingGu.html';
+						content2 = './static/bar_WorkingGu.html';
 						// iframe 로딩 전에 로딩 스피너 표시
 						$("#loading-spinner1").show();
 						// iframe 로드 완료 후
@@ -279,8 +279,8 @@
 
 					} else { // region1이 선택된경우
 						if(region2 == 0){							// region2가 선택되지 않은 경우
-							content1 = "/static/map_Working_" + region1 + ".html";
-							content2 = "/static/bar_WokingDong_" + region1 + ".html";
+							content1 = "./static/map_Working_" + region1 + ".html";
+							content2 = "./static/bar_WokingDong_" + region1 + ".html";
 							// iframe 로딩 전에 로딩 스피너 표시
 							$("#loading-spinner1").show();
 							// iframe 로드 완료 후
@@ -302,8 +302,8 @@
 							return ;
 
 						} else { // region2가 선택된 경우
-							content1 = "/static/map_Working_" + region1 + ".html";
-							content2 = "/static/bar_WorkingDongDetail_" + region1+"_"+ region2+ ".html";
+							content1 = "./static/map_Working_" + region1 + ".html";
+							content2 = "./static/bar_WorkingDongDetail_" + region1+"_"+ region2+ ".html";
 							// iframe 로딩 전에 로딩 스피너 표시
 							$("#loading-spinner1").show();
 							// iframe 로드 완료 후
