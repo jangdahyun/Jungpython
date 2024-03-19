@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>ITS(지능형 교통체계) 시각화</title>
+    <link rel="stylesheet" type="text/css" href="https://www.jeasyui.com/easyui/themes/metro-gray/easyui.css">
+    <link rel="stylesheet" type="text/css" href="https://www.jeasyui.com/easyui/themes/icon.css">
+    <link rel="stylesheet" type="text/css" href="https://www.jeasyui.com/easyui/themes/color.css">
+    <link rel="stylesheet" type="text/css" href="https://www.jeasyui.com/easyui/demo/demo.css">
+    <script type="text/javascript" src="https://www.jeasyui.com/easyui/jquery.min.js"></script>
+    <script type="text/javascript" src="https://www.jeasyui.com/easyui/jquery.easyui.min.js"></script>
+	<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com">
+	<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+
+	<!-- UIkit CSS -->
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uikit@3.18.0/dist/css/uikit.min.css" />
+
+	<!-- UIkit JS -->
+	<script src="https://cdn.jsdelivr.net/npm/uikit@3.18.0/dist/js/uikit.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/uikit@3.18.0/dist/js/uikit-icons.min.js"></script>
+	<style>
+		iframe {
+            width: 100%; /* 원하는 비율이나 픽셀로 조절 가능 */
+            height: 100%;
+            border: none; /* iframe 테두리 제거 */
+        }
+		#controllView div{ margin-bottom: 20px;}
+        #loading-spinner {
+            display: none; /* 초기에는 숨김 */
+        }
+	</style>
+</head>
+<body class="easyui-layout">
+	<div data-options="region:'north',border:false" style="background:#fff;height: 140px;">
+		<div style="height: 140px; display: flex; padding: 0 100px; align-items: center;">
+			<div style="display: flex;align-items: center;">
+				<h1 id="logo" style="margin-bottom: 0;"><img src="/static/img/logo.png" alt="로고" style="max-width: 200px;"></h1>
+				<span style="padding-left: 40px;font-size: 24px; font-weight: 700;">서울특별시 고령자 교통 관련 사고 통계</span>
+			</div>
+			
+			<div class="uk-navbar-right">
+
+                <ul class="uk-navbar-nav" style='font-family: "Noto Sans KR", sans-serif; font-weight: 600;'>
+                    <li><a href="/">HOME</a></li>
+                    <li class="uk-active"><a href="/road">도로상태별</a></li>
+                    <li><a href="/month">월별</a></li>
+                    <li><a href="/3D">3D</a></li>
+                    <li><a href="/heatmap">히트맵</a></li>
+                </ul>
+
+            </div>
+		</div>
+	</div>
+	<!--
+		<div data-options="region:'east',split:true,collapsed:true,title:'East'" style="width:100px;padding:10px;">
+			east region
+		</div>
+	-->
+    <!--
+
+        <div data-options="region:'south',border:false" style="height:50px;background:#C7CCD1;padding:10px;height: 100px;">
+            <h2>하단에 나타낼 데이터</h2>
+        </div>
+    -->
+	<div data-options="region:'center'" id="content" >
+		<div id="contentBody" style="width: 100%; height: 100%;">
+			<div style="height: 50px; display: flex; gap: 50px; padding: 0 100px; align-items: center;">
+                <select class="uk-select uk-form-small" id="ck1" style="width: 200px;">
+                    <option value="0">운전자</option>
+                    <option value="1">보행자</option>
+                </select>
+                <input type="button" id="searchBtn" value="찾 기" class="uk-button uk-button-primary" style="line-height: 0;display: block; text-align: center; align-items: center; justify-content: center; height: 30px;">
+            </div>
+            <div style="height: calc(100% - 50px); display: flex;">
+                <div id="center-left" style="width: 50%; height: 100%; position: relative; overflow: hidden; margin: auto; padding: 0px;">
+                    <div id="loading-spinner1" uk-spinner="ratio: 2" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);"></div>
+                    <iframe id="content-frame1" src="/static/road_D_bar.html" frameborder="0"></iframe>
+                </div>
+                <div id="center-right" style="width: 50%; height: 100%; position: relative; margin: auto; display: flex; align-items: center; justify-content: center;">
+                    <div id="loading-spinner2" uk-spinner="ratio: 2" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);"></div>
+                    <iframe id="content-frame2" src="/static/road_D_pie.html" frameborder="0"></iframe>
+                </div>
+            </div>
+		</div>
+	</div>
+    <script>
+        $(function(){
+            content1 = "/static/road_D_bar.html";
+            content2 = "/static/road_D_pie.html";
+
+            // iframe 로딩 전에 로딩 스피너 표시
+            $("#loading-spinner1").show();
+                // iframe 로드 완료 후
+                $("#content-frame1").on("load", function(){
+                    // 로딩 스피너 숨기고 iframe 표시
+                    $("#loading-spinner1").hide();
+                });
+                // iframe 소스 변경
+                $("#content-frame1").attr("src", content1);
+
+                // iframe 로딩 전에 로딩 스피너 표시
+                $("#loading-spinner2").show();
+                // iframe 로드 완료 후
+                $("#content-frame2").on("load", function(){
+                    // 로딩 스피너 숨기고 iframe 표시
+                    $("#loading-spinner2").hide();
+                });
+                // iframe 소스 변경
+                $("#content-frame2").attr("src", content2);
+
+
+                
+            $("#searchBtn").click(function(){
+                let val = $("#ck1").val();
+                content1 = "";
+                content2 = "";
+           
+                if(val == 0) {
+                    content1 = "/static/road_D_bar.html"
+                    content2 = "/static/road_D_pie.html"
+                } else {
+                    content1 = "/static/road_W_bar.html"
+                    content2 = "/static/road_W_pie.html"
+                }
+
+                // iframe 로딩 전에 로딩 스피너 표시
+                $("#loading-spinner1").show();
+                // iframe 로드 완료 후
+                $("#content-frame1").on("load", function(){
+                    // 로딩 스피너 숨기고 iframe 표시
+                    $("#loading-spinner1").hide();
+                });
+                // iframe 소스 변경
+                $("#content-frame1").attr("src", content1);
+
+                // iframe 로딩 전에 로딩 스피너 표시
+                $("#loading-spinner2").show();
+                // iframe 로드 완료 후
+                $("#content-frame2").on("load", function(){
+                    // 로딩 스피너 숨기고 iframe 표시
+                    $("#loading-spinner2").hide();
+                });
+                // iframe 소스 변경
+                $("#content-frame2").attr("src", content2);
+
+            })
+        })
+
+    </script>
+</body>
+</html>
