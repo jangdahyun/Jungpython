@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- Chart.js 라이브러리 로드 -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* 차트 초기에 숨기기 */
+        #donut-chart {
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+            flex-direction: column;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+<div id="wrap" style="margin: auto; width:100%;">
+    <div id="title" style="font-family: Arial; padding: 0 10px 40px 10px; text-align: center; font-size: 25px; font-weight: 500;">노인 운전자 교통사고의 노면상태별 피해정도</div>
+    <div style="display: flex; flex-direction: column; width:100%; align-items:center" >
+        <div style="display: flex; margin-bottom:80px;grap: 20px">
+            <div style="position: relative; width: 250px; height: 250px;">
+                <canvas id="donut-chart1"></canvas>
+                <div id="total1" style="position: absolute; top:55%;left:50%; transform:translate(-50%,-50%)">
+                </div>
+                <div style="position: absolute; top:100%;left:50%; transform:translate(-50%,0)">
+                    건조
+                </div>
+            </div>
+            <div style="position: relative; width: 250px; height: 250px;">
+                <canvas id="donut-chart2"></canvas>
+                <div id="total2" style="position: absolute; top:55%;left:50%; transform:translate(-50%,-50%)">
+                </div>
+                <div style="position: absolute; top:100%;left:50%; transform:translate(-50%,0)">
+                    젖음/습기
+                </div>
+            </div>
+        </div>
+        
+        <div style="display: flex;">
+            <div style="position: relative; width: 250px; height: 250px;">
+                <canvas id="donut-chart3"></canvas>
+                <div id="total3" style="position: absolute; top:55%;left:50%; transform:translate(-50%,-50%)">
+                </div>
+                <div style="position: absolute; top:100%;left:50%; transform:translate(-50%,0)">
+                    서리/결빙
+                </div>
+            </div>
+            <div style="position: relative; width: 250px; height: 250px;">
+                <canvas id="donut-chart4"></canvas>
+                <div id="total4" style="position: absolute; top:55%;left:50%; transform:translate(-50%,-50%)">
+                </div>
+                <div style="position: absolute; top:100%;left:50%; transform:translate(-50%,0)">
+                    적설
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 데이터 정의
+    var data = {
+        labels: ['경상', '중상', '사망'],
+        datasets: [{
+            data: [0, 0, 0],
+            backgroundColor: ['#0000ff99', '#ffa50099', '#ff000099']
+        }]
+    };
+
+    // 차트 생성
+    var ctx1 = document.getElementById('donut-chart1').getContext('2d');
+    var myDonutChart1 = new Chart(ctx1, {
+        type: 'doughnut',
+        data: data,
+        options: {
+            title: {
+                display: true,
+                text: '노인 운전자 교통사고 피해정도'
+            },
+            cutoutPercentage: 50 // 도넛 차트의 가운데 부분을 빈 공간으로 설정합니다.
+                
+        }
+    });
+    var ctx2 = document.getElementById('donut-chart2').getContext('2d');
+    var myDonutChart2 = new Chart(ctx2, {
+        type: 'doughnut',
+        data: data,
+        options: {
+            title: {
+                display: true,
+                text: '노인 보행자 교통사고 피해정도'
+            },
+            cutoutPercentage: 50 // 도넛 차트의 가운데 부분을 빈 공간으로 설정합니다.
+                
+        }
+    });
+    var ctx3 = document.getElementById('donut-chart3').getContext('2d');
+    var myDonutChart3 = new Chart(ctx3, {
+        type: 'doughnut',
+        data: data,
+        options: {
+            title: {
+                display: true,
+                text: '노인 보행자 교통사고 피해정도'
+            },
+            cutoutPercentage: 50 // 도넛 차트의 가운데 부분을 빈 공간으로 설정합니다.
+                
+        }
+    });
+    var ctx4 = document.getElementById('donut-chart4').getContext('2d');
+    var myDonutChart4 = new Chart(ctx4, {
+        type: 'doughnut',
+        data: data,
+        options: {
+            title: {
+                display: true,
+                text: '노인 보행자 교통사고 피해정도'
+            },
+            cutoutPercentage: 50 // 도넛 차트의 가운데 부분을 빈 공간으로 설정합니다.
+                
+        }
+    });
+
+    // 페이지가 로드될 때 애니메이션 추가
+    window.onload = function() {
+        var chart1 = document.getElementById('donut-chart1');
+        chart1.style.opacity = 1; // 차트 표시
+        var chart2 = document.getElementById('donut-chart1');
+        chart2.style.opacity = 1; // 차트 표시
+        var chart3 = document.getElementById('donut-chart1');
+        chart3.style.opacity = 1; // 차트 표시
+        var chart4 = document.getElementById('donut-chart1');
+        chart4.style.opacity = 1; // 차트 표시
+
+        // JSON 파일에서 데이터 가져오기
+        fetch('road_D_pie.json')
+            .then(response => response.json())
+            .then(datas => {
+                console.log(datas)
+                 
+                data = datas[0]
+                let tt = data['경상']+ data['중상'] + data['사망']
+                // 데이터 업데이트
+                myDonutChart1.data.datasets[0].data = Object.values(data);
+                let total = document.querySelector('#total1')
+                total.innerHTML=`총합: ${tt}`
+                myDonutChart1.update();
+
+                data = datas[1]
+                tt = data['경상']+ data['중상'] + data['사망']
+                // 데이터 업데이트
+                myDonutChart2.data.datasets[0].data = Object.values(data);
+                total = document.querySelector('#total2')
+                total.innerHTML=`총합: ${tt}`
+                myDonutChart2.update();
+
+                data = datas[2]
+                tt = data['경상']+ data['중상'] + data['사망']
+                // 데이터 업데이트
+                myDonutChart3.data.datasets[0].data = Object.values(data);
+                total = document.querySelector('#total3')
+                total.innerHTML=`총합: ${tt}`
+                myDonutChart3.update();
+
+                data = datas[3]
+                tt = data['경상']+ data['중상'] + data['사망']
+                // 데이터 업데이트
+                myDonutChart4.data.datasets[0].data = Object.values(data);
+                total = document.querySelector('#total4')
+                total.innerHTML=`총합: ${tt}`
+                myDonutChart4.update();
+                
+            });
+    };
+</script>
+
+</body>
+</html>
