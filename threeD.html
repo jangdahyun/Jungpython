@@ -80,7 +80,7 @@
 
 	<script>
         $(function(){
-            content = '/static/DriveType3D.html';
+            content = './static/DriveType3D.html';
             // iframe 로딩 전에 로딩 스피너 표시
             $("#loading-spinner").show();
                 // $("#content-frame").hide();
@@ -98,9 +98,9 @@
             $("#searchBtn").click(function(){
                 let val = $("#ck1").val()
                 if(val==0){
-                    content = "/static/DriveType3D.html"
+                    content = "./static/DriveType3D.html"
                 } else {
-					content = "/static/WorkType3D.html"
+					content = "./static/WorkType3D.html"
 				}
 
                 // iframe 로딩 전에 로딩 스피너 표시

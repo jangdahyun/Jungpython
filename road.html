@@ -90,8 +90,8 @@
 	</div>
     <script>
         $(function(){
-            content1 = "/static/road_D_bar.html";
-            content2 = "/static/road_D_pie.html";
+            content1 = "./static/road_D_bar.html";
+            content2 = "./static/road_D_pie.html";
 
             // iframe 로딩 전에 로딩 스피너 표시
             $("#loading-spinner1").show();
@@ -121,11 +121,11 @@
                 content2 = "";
            
                 if(val == 0) {
-                    content1 = "/static/road_D_bar.html"
-                    content2 = "/static/road_D_pie.html"
+                    content1 = "./static/road_D_bar.html"
+                    content2 = "./static/road_D_pie.html"
                 } else {
-                    content1 = "/static/road_W_bar.html"
-                    content2 = "/static/road_W_pie.html"
+                    content1 = "./static/road_W_bar.html"
+                    content2 = "./static/road_W_pie.html"
                 }
 
                 // iframe 로딩 전에 로딩 스피너 표시

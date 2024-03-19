@@ -88,7 +88,7 @@
 
     <script>
         $(function(){
-            content = '/static/month_D_3d.html';
+            content = './static/month_D_3d.html';
             // iframe 로딩 전에 로딩 스피너 표시
             $("#loading-spinner").show();
             // $("#content-frame").hide();
@@ -112,13 +112,13 @@
                 content = "";
                 let val = ""+ck1 + ck2;
                 if(val=='00'){
-                    content = "/static/month_D_3d.html"
+                    content = "./static/month_D_3d.html"
                 } else if (val=='01'){
-                    content = "/static/month_D_2d.html"
+                    content = "./static/month_D_2d.html"
                 } else if (val=='10'){
-                    content = "/static/month_W_3d.html"
+                    content = "./static/month_W_3d.html"
                 } else {
-                    content = "/static/month_W_2d.html"
+                    content = "./static/month_W_2d.html"
                 }
 
                 // iframe 로딩 전에 로딩 스피너 표시
