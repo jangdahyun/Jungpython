@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>ITS(지능형 교통체계) 시각화</title>
+    <link rel="stylesheet" type="text/css" href="https://www.jeasyui.com/easyui/themes/metro-gray/easyui.css">
+    <link rel="stylesheet" type="text/css" href="https://www.jeasyui.com/easyui/themes/icon.css">
+    <link rel="stylesheet" type="text/css" href="https://www.jeasyui.com/easyui/themes/color.css">
+    <link rel="stylesheet" type="text/css" href="https://www.jeasyui.com/easyui/demo/demo.css">
+    <script type="text/javascript" src="https://www.jeasyui.com/easyui/jquery.min.js"></script>
+    <script type="text/javascript" src="https://www.jeasyui.com/easyui/jquery.easyui.min.js"></script>
+	<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+	
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com">
+	<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+
+
+	<!-- UIkit CSS -->
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uikit@3.18.0/dist/css/uikit.min.css" />
+
+	<!-- UIkit JS -->
+	<script src="https://cdn.jsdelivr.net/npm/uikit@3.18.0/dist/js/uikit.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/uikit@3.18.0/dist/js/uikit-icons.min.js"></script>
+	<style>
+		body{color: inherit;font-family: "Noto Sans KR", sans-serif;}
+		iframe {
+            width: 100%; /* 원하는 비율이나 픽셀로 조절 가능 */
+            height: 100%;
+            border: none; /* iframe 테두리 제거 */
+        }
+		#controllView div{ margin-bottom: 20px;}
+		#loading-spinner1, #loading-spinner2 {
+            display: none; /* 초기에는 숨김 */
+        }
+	</style>
+</head>
+<body class="easyui-layout">
+	<div data-options="region:'north',border:false" style="background:#fff;height: 140px;">
+		<div style="height: 140px; display: flex; padding: 0 100px; align-items: center;">
+			<div style="display: flex;align-items: center;">
+				<h1 id="logo" style="margin-bottom: 0;"><img src="/static/img/logo.png" alt="로고" style="max-width: 200px;"></h1>
+				<span style="padding-left: 40px;font-size: 24px; font-weight: 700;">서울특별시 고령자 교통 관련 사고 통계</span>
+			</div>
+			
+			<div class="uk-navbar-right">
+
+                <ul class="uk-navbar-nav" style='font-family: "Noto Sans KR", sans-serif; font-weight: 600;'>
+                    <li class="uk-active"><a href="/">HOME</a></li>
+                    <li><a href="/road">도로상태별</a></li>
+                    <li><a href="/month">월별</a></li>
+                    <li><a href="/3D">3D</a></li>
+                    <li><a href="/heatmap">히트맵</a></li>
+                </ul>
+
+            </div>
+		</div>
+	</div>
+
+	<div data-options="region:'west',split:true,title:'선택'" style="width:250px;padding:20px;" id="controllView">
+		<div>
+			<label for="">데이터 종류</label>
+			<select class="uk-select uk-form-small" id="sheetName">
+				<option value="0">데이터 종류를 선택하세요.</option>
+				<option value="노인운전자사고">노인운전자사고</option>
+				<option value="노인보행자사고">노인보행자사고</option>
+			</select>
+		</div>
+		<div>
+			<label for="">구</label>
+			<select class="uk-select uk-form-small" id="region1">
+				<option value="0">지역을 선택하세요.</option>
+				<option value="전체">전체</option>
+				<option value="강남구">강남구</option>
+				<option value="강동구">강동구</option>
+				<option value="강북구">강북구</option>
+				<option value="강서구">강서구</option>
+				<option value="관악구">관악구</option>
+				<option value="광진구">광진구</option>
+				<option value="구로구">구로구</option>
+				<option value="금천구">금천구</option>
+				<option value="노원구">노원구</option>
+				<option value="도봉구">도봉구</option>
+				<option value="동대문구">동대문구</option>
+				<option value="동작구">동작구</option>
+				<option value="마포구">마포구</option>
+				<option value="서대문구">서대문구</option>
+				<option value="서초구">서초구</option>
+				<option value="성동구">성동구</option>
+				<option value="성북구">성북구</option>
+				<option value="송파구">송파구</option>
+				<option value="양천구">양천구</option>
+				<option value="영등포구">영등포구</option>
+				<option value="용산구">용산구</option>
+				<option value="은평구">은평구</option>
+				<option value="종로구">종로구</option>
+				<option value="중구">중구</option>
+				<option value="중랑구">중랑구</option>
+			</select>
+		</div>
+		<div>
+			<label for="">동</label>
+			<select class="uk-select uk-form-small" id="region2">
+				<option value="0">지역을 선택하세요.</option>
+			</select>
+		</div>
+		<div id="searchBox" style="text-align: center; width: 100%; margin: auto; display: flex; align-items: center; justify-content: center; padding-top: 30px;">
+			<input type="button" id="searchBtn" value="찾 기" class="uk-button uk-button-primary" style="display: block; text-align: center; align-items: center; justify-content: center;">
+		</div>
+	</div>
+	<!--
+	
+		<div data-options="region:'south',border:false" style="height:50px;background:#C7CCD1;padding:10px;height: 100px;">
+			<h2>하단에 나타낼 데이터</h2>
+		</div>
+	-->
+	<div data-options="region:'center'" id="content" >
+		<div id="contentBody" style="display: flex; width: 100%; height: 100%;">
+			<div id="center-left" style="position: relative; width: 50%; height: 100%; overflow: hidden; margin: auto; padding: 0px;">
+				<div id="loading-spinner1" uk-spinner="ratio: 2" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);"></div>
+				<iframe id="content-frame1" src=""></iframe>
+			</div>
+			<div id="center-right" style="position: relative; width: 50%; height: 100%; margin: auto; display: flex; align-items: center; justify-content: center;">
+				<div id="loading-spinner2" uk-spinner="ratio: 2" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);"></div>
+				<iframe id="content-frame2" src=""></iframe>
+			</div>
+		</div>
+	</div>
+	<script>
+		$(function(){
+			content1 = '/static/main_Drive_sunburst.html';
+			content2 = '/static/main_scatter.html';
+            // iframe 로딩 전에 로딩 스피너 표시
+            $("#loading-spinner1").show();
+			// $("#content-frame").hide();
+			// iframe 로드 완료 후
+			$("#content-frame1").on("load", function(){
+				// 로딩 스피너 숨기고 iframe 표시
+				$("#loading-spinner1").hide();
+				// $("#content-frame").show();
+			});
+			// iframe 소스 변경
+			$("#content-frame1").attr("src", content1);
+
+            $("#loading-spinner2").show();
+			// $("#content-frame").hide();
+			// iframe 로드 완료 후
+			$("#content-frame2").on("load", function(){
+				// 로딩 스피너 숨기고 iframe 표시
+				$("#loading-spinner2").hide();
+				// $("#content-frame").show();
+			});
+			// iframe 소스 변경
+			$("#content-frame2").attr("src", content2);
+
+
+			$("#sheetName").change(function(){
+				$("#region1").val("0")
+			})
+
+
+			$("#searchBtn").click(function(){
+				let sheetName = $("#sheetName").val()
+				let region1 = $("#region1").val()
+				let region2 = $("#region2").val()
+
+				if(sheetName==0) {
+					alert("시트를 선택해 주세요.")
+					return ;
+				}
+				if(region1==0) {
+					alert("구를 선택해 주세요.")
+					return ;
+				}
+
+
+				if(sheetName == '노인운전자사고') {				// 노인 운전자 사고인 경우
+
+					if(region1 == '전체'){							// region1이 선택되지 않은 경우
+						content1 = '/static/map_DriveGu.html';
+						content2 = '/static/bar_DriveGu.html';
+						// iframe 로딩 전에 로딩 스피너 표시
+						$("#loading-spinner1").show();
+						// iframe 로드 완료 후
+						$("#content-frame1").on("load", function(){
+							// 로딩 스피너 숨기고 iframe 표시
+							$("#loading-spinner1").hide();
+						});
+						// iframe 소스 변경
+						$("#content-frame1").attr("src", content1);
+
+						$("#loading-spinner2").show();
+						// iframe 로드 완료 후
+						$("#content-frame2").on("load", function(){
+							// 로딩 스피너 숨기고 iframe 표시
+							$("#loading-spinner2").hide();
+						});
+						// iframe 소스 변경
+						$("#content-frame2").attr("src", content2);
+						return ;
+
+					} else {										// region1이 선택된경우
+						
+						if(region2 == 0){							// region2가 선택되지 않은 경우
+							content1 = "/static/map_Drive_" + region1 + ".html";
+							content2 = "/static/bar_DriveDong_" + region1 + ".html";
+							// iframe 로딩 전에 로딩 스피너 표시
+							$("#loading-spinner1").show();
+							// iframe 로드 완료 후
+							$("#content-frame1").on("load", function(){
+								// 로딩 스피너 숨기고 iframe 표시
+								$("#loading-spinner1").hide();
+							});
+							// iframe 소스 변경
+							$("#content-frame1").attr("src", content1);
+
+							$("#loading-spinner2").show();
+							// iframe 로드 완료 후
+							$("#content-frame2").on("load", function(){
+								// 로딩 스피너 숨기고 iframe 표시
+								$("#loading-spinner2").hide();
+							});
+							// iframe 소스 변경
+							$("#content-frame2").attr("src", content2);
+							return ;
+
+						} else { // region2가 선택된 경우
+							content1 = "/static/map_Drive_" + region1 + ".html";
+							content2 = "/static/bar_DriveDongDetail_" + region1+"_"+ region2+ ".html";
+							// iframe 로딩 전에 로딩 스피너 표시
+							$("#loading-spinner1").show();
+							// iframe 로드 완료 후
+							$("#content-frame1").on("load", function(){
+								// 로딩 스피너 숨기고 iframe 표시
+								$("#loading-spinner1").hide();
+							});
+							// iframe 소스 변경
+							$("#content-frame1").attr("src", content1);
+
+							$("#loading-spinner2").show();
+							// iframe 로드 완료 후
+							$("#content-frame2").on("load", function(){
+								// 로딩 스피너 숨기고 iframe 표시
+								$("#loading-spinner2").hide();
+							});
+							// iframe 소스 변경
+							$("#content-frame2").attr("src", content2);
+							return ;
+						}
+
+					}
+	
+				} else {// 노인 보행자 인경우!
+
+					if(region1 == '전체'){							// region1이 선택되지 않은 경우
+						content1 = '/static/map_WorkingGu.html';
+						content2 = '/static/bar_WorkingGu.html';
+						// iframe 로딩 전에 로딩 스피너 표시
+						$("#loading-spinner1").show();
+						// iframe 로드 완료 후
+						$("#content-frame1").on("load", function(){
+							// 로딩 스피너 숨기고 iframe 표시
+							$("#loading-spinner1").hide();
+						});
+						// iframe 소스 변경
+						$("#content-frame1").attr("src", content1);
+
+						$("#loading-spinner2").show();
+						// iframe 로드 완료 후
+						$("#content-frame2").on("load", function(){
+							// 로딩 스피너 숨기고 iframe 표시
+							$("#loading-spinner2").hide();
+						});
+						// iframe 소스 변경
+						$("#content-frame2").attr("src", content2);
+						return ;
+
+					} else { // region1이 선택된경우
+						if(region2 == 0){							// region2가 선택되지 않은 경우
+							content1 = "/static/map_Working_" + region1 + ".html";
+							content2 = "/static/bar_WokingDong_" + region1 + ".html";
+							// iframe 로딩 전에 로딩 스피너 표시
+							$("#loading-spinner1").show();
+							// iframe 로드 완료 후
+							$("#content-frame1").on("load", function(){
+								// 로딩 스피너 숨기고 iframe 표시
+								$("#loading-spinner1").hide();
+							});
+							// iframe 소스 변경
+							$("#content-frame1").attr("src", content1);
+
+							$("#loading-spinner2").show();
+							// iframe 로드 완료 후
+							$("#content-frame2").on("load", function(){
+								// 로딩 스피너 숨기고 iframe 표시
+								$("#loading-spinner2").hide();
+							});
+							// iframe 소스 변경
+							$("#content-frame2").attr("src", content2);
+							return ;
+
+						} else { // region2가 선택된 경우
+							content1 = "/static/map_Working_" + region1 + ".html";
+							content2 = "/static/bar_WorkingDongDetail_" + region1+"_"+ region2+ ".html";
+							// iframe 로딩 전에 로딩 스피너 표시
+							$("#loading-spinner1").show();
+							// iframe 로드 완료 후
+							$("#content-frame1").on("load", function(){
+								// 로딩 스피너 숨기고 iframe 표시
+								$("#loading-spinner1").hide();
+							});
+							// iframe 소스 변경
+							$("#content-frame1").attr("src", content1);
+
+							$("#loading-spinner2").show();
+							// iframe 로드 완료 후
+							$("#content-frame2").on("load", function(){
+								// 로딩 스피너 숨기고 iframe 표시
+								$("#loading-spinner2").hide();
+							});
+							// iframe 소스 변경
+							$("#content-frame2").attr("src", content2);
+							return ;
+						}
+					}
+				}
+
+			})
+
+
+
+			// 동 바꿔주는!
+			$("#region1").change(function(){
+				let val = $("#region1").val()
+				if(val==0){
+					$("#region2").empty()
+					$("#region2").html(
+						`<option value="0">지역을 선택하세요.</option>`
+					)
+				} else {
+					axios.get('/api/donglist?gu='+val)
+					.then(function(res) {
+						console.log("응답");
+						$("#region2").empty()
+						content = `<option value="0">지역을 선택하세요.</option>`;
+						let data = res.data
+						for( a of data){
+							content += `<option value="${a}">${a}</option>`
+						}
+						$("#region2").html(content);
+					})
+					.catch(function (error) {
+						console.log(error);
+					})
+				}
+			})
+
+		});
+	</script>
+</body>
+</html>
